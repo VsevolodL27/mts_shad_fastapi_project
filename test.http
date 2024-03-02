@@ -46,3 +46,40 @@ DELETE http://localhost:8000/api/v1/books/1 HTTP/1.1
 content-type: application/json
 
 ###
+
+# Создание продавца
+POST http://localhost:8000/api/v1/sellers/ HTTP/1.1
+content-type: application/json
+
+{
+    "first_name": "Sergey",
+    "last_name": "Fedorov",
+    "email": "ser_fed@mail.ru",
+    "password": "cska_1946"
+}
+###
+
+# Получение списка всех продавцов
+GET http://localhost:8000/api/v1/sellers/ HTTP/1.1
+###
+
+#Получение данных о продавце по его id
+GET http://localhost:8000/api/v1/sellers/1 HTTP/1.1
+
+###
+
+#Обновление данных о продавце
+PUT http://localhost:8000/api/v1/sellers/1 HTTP/1.1
+content-type: application/json
+
+{
+    "first_name": "Viktor",
+    "last_name": "Pelevin",
+    "email": "PelVik1970@mail.ru",
+    "id": 1
+}
+
+###
+#Удаление продавца
+DELETE http://localhost:8000/api/v1/sellers/1 HTTP/1.1
+###
