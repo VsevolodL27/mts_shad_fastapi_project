@@ -7,14 +7,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.configurations.database import get_async_session
 from src.models.sellers import Seller
 from src.models.books import Book
-from src.schemas.sellers import IncomingSeller, ReturnedSeller, ReturnedSellerBooks, ReturnedAllSellers, UpdatedSeller
+from src.schemas.sellers import IncomingSeller, ReturnedSeller, ReturnedAllSellers, UpdatedSeller, ReturnedSellerBooks
 from src.schemas.books import ReturnedBookInfo
+
 
 sellers_router = APIRouter(tags=["sellers"], prefix="/sellers")
 
+
 DBSession = Annotated[AsyncSession, Depends(get_async_session)]
 
-# Ручка для создания продавца
+
 @sellers_router.post("/", response_model=ReturnedSeller, status_code=status.HTTP_201_CREATED)
 async def create_seller(seller: IncomingSeller, session: DBSession):
     new_seller = Seller(
@@ -25,20 +27,10 @@ async def create_seller(seller: IncomingSeller, session: DBSession):
     )
     session.add(new_seller)
     await session.flush()
-
+    
     return new_seller
 
 
-# Ручка для получения всех продавцов
-@sellers_router.get("/", response_model=ReturnedAllSellers, status_code=status.HTTP_200_OK)
-async def get_all_sellers(session: DBSession):
-    query = select(Seller)
-    res = await session.execute(query)
-    sellers = res.scalars().all()
-    return {"sellers": sellers}
-
-
-# Ручка для получения данных о конкретном продавце (без пароля) с книгами
 @sellers_router.get("/{seller_id}", response_model=ReturnedSellerBooks, status_code=status.HTTP_200_OK)
 async def get_seller(seller_id: int, session: DBSession):
     seller = await session.get(Seller, seller_id)
@@ -49,27 +41,32 @@ async def get_seller(seller_id: int, session: DBSession):
     books_from_db = await session.execute(query)
     books_from_db = books_from_db.scalars().all()
 
-    books_from_db = [ReturnedBookInfo(
-                                        id=book.id,
-                                        title=book.title,
-                                        author=book.author,
-                                        year=book.year,
-                                        count_pages=book.count_pages
-                                    ) 
-                    for book in books_from_db]
+    books_from_db = [ReturnedBookInfo(id=book.id,
+                                            title=book.title,
+                                            author=book.author,
+                                            year=book.year,
+                                            count_pages=book.count_pages) 
+                          for book in books_from_db]
 
     seller_response = {
-        "id": seller.id,
         "first_name": seller.first_name,
         "last_name": seller.last_name,
         "email": seller.email,
+        "id": seller.id,
         "books": books_from_db
     }
 
     return seller_response
 
 
-# Ручка для обновления данных о продавце 
+@sellers_router.get("/", response_model=ReturnedAllSellers, status_code=status.HTTP_200_OK)
+async def get_all_sellers(session: DBSession):
+    query = select(Seller)
+    res = await session.execute(query)
+    sellers = res.scalars().all()
+    return {"sellers": sellers}
+
+
 @sellers_router.put("/{seller_id}")
 async def update_seller(seller_id: int, new_data: UpdatedSeller, session: DBSession):
     if updated_seller := await session.get(Seller, seller_id):
@@ -84,11 +81,11 @@ async def update_seller(seller_id: int, new_data: UpdatedSeller, session: DBSess
     return Response(status_code=status.HTTP_404_NOT_FOUND)
 
 
-# Ручка для удаления данных о продавце
-@sellers_router.delete("/{seller_id}", status_code=status.HTTP_204_NO_CONTENT)
+@sellers_router.delete("/{seller_id}")
 async def delete_seller(seller_id: int, session: DBSession):
     deleted_seller = await session.get(Seller, seller_id)
+
     if deleted_seller:
         await session.delete(deleted_seller)
-
+    
     return Response(status_code=status.HTTP_204_NO_CONTENT)

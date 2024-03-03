@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
 from pydantic_core import PydanticCustomError
 
-__all__ = ["IncomingBook", "ReturnedAllBooks", "ReturnedBook", "ReturnedBookInfo"]
+__all__ = ["IncomingBook", "ReturnedAllBooks", "ReturnedBook"]
 
 
 # Базовый класс "Книги", содержащий поля, которые есть во всех классах-наследниках.
@@ -38,7 +38,7 @@ class ReturnedBook(BaseBook):
 class ReturnedAllBooks(BaseModel):
     books: list[ReturnedBook]
 
-# Класс для возврата информации о книге
+
 class ReturnedBookInfo(BaseModel):
     id: int
     title: str

@@ -1,9 +1,5 @@
-from pydantic import BaseModel, Field
-
-from .books import ReturnedBookInfo
-
-__all__ = ["IncomingSeller", "ReturnedSeller", "ReturnedSellerBooks", "ReturnedAllSellers", "UpdatedSeller"]
-
+from pydantic import BaseModel
+from .books import ReturnedBookFromSeller
 
 class BaseSeller(BaseModel):
     first_name: str
@@ -16,15 +12,25 @@ class IncomingSeller(BaseSeller):
 
 
 class ReturnedSeller(BaseSeller):
-    id: int
+    id: int 
 
-class ReturnedSellerBooks(BaseSeller):
-    books: list[ReturnedBookInfo]
+
+class ReturnedSellerSilent(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    email: str
+
 
 class ReturnedAllSellers(BaseModel):
-    sellers: list[ReturnedSeller]
+    sellers: list[ReturnedSellerSilent]
+
+
+class ReturnedSellerBooks(ReturnedSellerSilent):
+    books: list[ReturnedBookFromSeller]
+
 
 class UpdatedSeller(BaseModel):
     first_name: str
     last_name: str
-    email: str    
+    email: str

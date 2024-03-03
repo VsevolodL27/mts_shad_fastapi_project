@@ -30,7 +30,7 @@ async def create_book(
     )
     session.add(new_book)
     await session.flush()
-    
+
     return new_book
 
 
