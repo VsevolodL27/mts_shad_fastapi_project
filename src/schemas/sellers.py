@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from .books import ReturnedBookFromSeller
+from .books import ReturnedBookInfo
 
 class BaseSeller(BaseModel):
     first_name: str
@@ -27,7 +27,7 @@ class ReturnedAllSellers(BaseModel):
 
 
 class ReturnedSellerBooks(ReturnedSellerSilent):
-    books: list[ReturnedBookFromSeller]
+    books: list[ReturnedBookInfo]
 
 
 class UpdatedSeller(BaseModel):
