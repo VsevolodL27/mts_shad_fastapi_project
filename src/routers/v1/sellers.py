@@ -76,7 +76,6 @@ async def update_seller(seller_id: int, new_data: UpdatedSeller, session: DBSess
         updated_seller.first_name = new_data.first_name
         updated_seller.last_name = new_data.last_name
         updated_seller.email = new_data.email
-        updated_seller.password = updated_seller.password
 
         await session.flush()
 
